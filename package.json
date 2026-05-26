@@ -1,0 +1,18 @@
+{
+  "name": "fastygo-imagy",
+  "private": true,
+  "packageManager": "bun@1.3.3",
+  "scripts": {
+    "build:css": "tailwindcss -i ./web/static/css/input.css -o ./web/static/css/app.css --minify",
+    "lint:ui8px": "ui8px lint internal/views internal/ui web/static/css/input.css --ignore .fastygo web/static/css/ui8kit",
+    "templ": "go tool templ generate ./...",
+    "verify": "go tool templ generate ./... && bun run build:css && bun run lint:ui8px && go test ./...",
+    "build": "go build -o imagy ./cmd/server",
+    "go": "node scripts/run-server.mjs"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.1",
+    "tailwindcss": "^4.2.1",
+    "ui8px": "0.2.4"
+  }
+}

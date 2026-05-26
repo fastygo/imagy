@@ -1,0 +1,30 @@
+{
+  "brand": "Imagy Panel",
+  "login": {
+    "title": "Sign in",
+    "subtitle": "Private single-user cabinet",
+    "email_label": "Email",
+    "password_label": "Password",
+    "submit_label": "Sign in",
+    "error_bad_creds": "Invalid email or password."
+  },
+  "theme": {
+    "label": "Theme",
+    "switch_to_dark": "Switch to dark",
+    "switch_to_light": "Switch to light"
+  },
+  "language_toggle_label": "Language",
+  "account": {
+    "sign_out": "Sign out"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Imagy panel shell — add features here.",
+    "body": "Welcome. This dashboard is intentionally empty — use it as a template for new cabinets."
+  },
+  "sample_stub": {
+    "title": "Sample",
+    "description": "Placeholder page for a second navigation item",
+    "body": "Replace this route and copy with your own cabinet pages."
+  }
+}

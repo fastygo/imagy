@@ -1,0 +1,30 @@
+package toggles
+
+import "github.com/fastygo/templ/ui"
+
+templ LanguageSwitch(data LanguageSwitchProps) {
+	if len(data.Items) > 0 {
+		@ui.Group(ui.GroupProps{
+			Class: "inline-flex items-center gap-1 text-xs font-medium text-muted-foreground",
+			Attrs: languageSwitchAttrs(data),
+		}) {
+			for i, item := range data.Items {
+				if i > 0 {
+					@ui.Text(ui.TextProps{Tag: "span", Class: "select-none text-muted-foreground/60"}, "/")
+				}
+				if item.Active {
+					@ui.Text(ui.TextProps{Tag: "span", Class: "text-foreground"}, item.Label)
+				} else {
+					@ui.Button(ui.ButtonProps{
+						Href:      item.Href,
+						Variant:   "unstyled",
+						Class:     "rounded-sm px-0.5 transition-colors hover:text-foreground",
+						AriaLabel: languageSwitchItemAriaLabel(data.AriaLabel, item),
+					}) {
+						{ item.Label }
+					}
+				}
+			}
+		}
+	}
+}

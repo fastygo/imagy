@@ -1,0 +1,11 @@
+package icon
+
+type IconProps struct {
+	Name  string
+	Size  string
+	Class string
+}
+
+templ Icon(p IconProps) {
+	<span class={ iconClasses(p) }></span>
+}

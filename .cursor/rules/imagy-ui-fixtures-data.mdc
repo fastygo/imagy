@@ -1,0 +1,46 @@
+---
+description: FastyGoUI — fixtures layer, default data in blocks, i18n, registry-ready bundles
+alwaysApply: true
+---
+
+# Data & fixtures (FastyGoUI)
+
+## Three layers (do not collapse them)
+
+1. **Inside each block / layout (package defaults)**  
+   - **English (or neutral) copy and sample structs** live **next to** the block implementation so the block is **self-contained**: a consumer can `fastygo add …` / copy from **CDN Registry** and see a **filled wireframe** without wiring an app.  
+   - This is the **canonical default** for standalone reuse (same idea as shadcn: snippet runs as-is).
+
+2. **`internal/fixtures/` (application layer)**  
+   - **Overrides and i18n**: embedded **`locale/*.json`**, **`LoadLocale`**, typed **`Locale`** in [`fixtures.go`](internal/fixtures/fixtures.go).  
+   - Maps **the same logical entities** (nav labels, dashboard, theme strings, …) as the blocks use, but **owned by the app** for translation and environment-specific text.  
+   - Handlers / features **merge** defaults from blocks **with** `fixtures.LoadLocale(ctx)` (or pass resolved strings into view data).
+
+3. **Per-locale JSON (`fixtures/locale/*.json`)**  
+   - **ru**, **en**, … — full translations of the **fixture model**.  
+   - Keeps **Russian** (and other languages) out of block packages when the product ships multiple locales; blocks still carry **defaults** for single-locale demos.
+
+## Why this looks like “triple work”
+
+- **In-block defaults:** registry / CDN story — block + data + deps ship together; prototype renders **immediately**.  
+- **Fixtures mirror:** same **entity keys** as the app’s fixture **`Locale`** so the **site shell** replaces copy **without** forking block code.  
+- **Locale files:** maintain **non-English** (e.g. **ru**) as separate JSON next to **en**, keyed consistently.
+
+The repetition is intentional: **portable artifact** (block) vs **product overrides** (fixtures) vs **translations** (locale JSON).
+
+## Separation of concerns
+
+- **Presentation** (`internal/views`, `internal/ui/*`): only receives **already-resolved** strings/structs (view models).  
+- **Blocks / components:** pure templ + **default** props for demos; no API coupling for static copy.  
+- **Fixtures:** the **single place** for embedded locale files and the Go **`Locale`** shape; extend **`Locale`** when new surfaces need copy, then add keys to **each** `locale/*.json`.
+
+When promoting a block to a **shared registry**, keep **default data + English prototype strings** **inside** the block package; keep **`fixtures`** as the **app shell** that overlays real locales.
+
+During showcase development, blocks live under **`internal/ui/blocks/<group>/`** (not `github.com/fastygo/blocks`). On extraction, move the package to **`github.com/fastygo/blocks`** unchanged defaults + templ deps.
+
+## Coordination
+
+- **`fastygo-ui-atomic-ui8px.mdc`** — ui8px, composition, no raw tags.  
+- **`fastygo-ui-design-system-registry.mdc`** — registry folders.  
+- **`fastygo-ui-aria.mdc`** — static + **`@ui8kit/aria`**; keep **accessible names** in fixtures when strings are user-facing.
+- **`fastygo-ui-validation-testing.mdc`** — Nu snapshots, axe, `validate:aria`, wireframe `go test` expectations.

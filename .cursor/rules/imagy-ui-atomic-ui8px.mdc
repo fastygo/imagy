@@ -1,0 +1,62 @@
+---
+description: ImagYUI — ui8px skeleton, templ/ui only, no raw HTML, internal/ui registry
+alwaysApply: true
+---
+
+# ImagYUI — composition & ui8px (prototype layer)
+
+## What this phase is (and what it is **not**)
+
+- **Prototype / “strength of structure”:** wireframes and **carcass** UI only—**no visual design**, no decoration, no brand polish. Goal: correct **information architecture**, **HTML5 semantics**, **accessibility**, and **composition**.
+- **Atoms/molecules:** **`github.com/fastygo/templ`** — wireframe Tailwind (ui8px) + shadcn-style tokens (`tweakcn`). Not a finished product DS.
+- **Showcase content:** **`internal/ui/{blocks,components,widgets}`** — staging until extraction to **`github.com/fastygo/blocks`** / **`github.com/imagy/widgets`**. Do **not** add those modules as dependencies while filling the site.
+- **Explicit utility chains** in `.templ` / Go `Class` are **acceptable**; ui8px gates **which** utilities appear.
+
+## Tailwind / ui8px
+
+- Use **only** utilities that pass **`ImagYUI/.ui8px/policy`**.
+- After edits to `.templ`, linted `.css`, or Go class strings, run **`bun run lint:ui8px`**.
+- **Forbidden:** kit/app-owned semantic CSS classes as SoT (no `ui-*` chrome prefixes in registry sources). **`latty` / `latty-*`** only for icon masks (see `latty-icons.css`).
+
+## No raw markup
+
+- **Forbidden:** raw layout/content tags (`motion.div`, `div`, `span`, `section`, …) in **`internal/ui/**`** and **`internal/views/**`** body composition.
+- **Mandatory:** **`github.com/fastygo/templ/ui`** and **`github.com/fastygo/templ/components`** for markup.
+- **Semantics:** `Block` vs `Box`, landmarks, nesting — follow templ tag groups in **`github.com/fastygo/templ/utils/tags.go`** (`TagGroupLayout`, stack, table, form, …). Top-level sections use **`ui.Block`**; do not nest Block in Block.
+- **Exception — document shell only:** `<!DOCTYPE>`, `<html>`, `<head>`, `<body>`, `<meta>`, `<title>`, `link`, `script` in **`internal/ui/layout`** or head partials.
+
+## Atomic stack
+
+- **Helpers:** `github.com/fastygo/templ/utils` — Cn, Compose/CVA, tags, ARIA. App-specific thin wrappers: **`internal/ui/utils`**.
+- **Molecules (mandatory import shape):** **`import "github.com/fastygo/templ/ui"`** → **`@ui.Stack`**, **`@ui.Button`**, **`ui.StackProps`**, … Do **not** import `templ/ui/button` etc. in this repo unless documented exception.
+- **Kit composites:** **`import cmp "github.com/fastygo/templ/components"`** → **`@cmp.Card`**, …
+- **App registry:** **`internal/ui/layout`**, **`blocks`**, **`components`**, **`widgets`** — see **`fastygo-ui-design-system-registry.mdc`**.
+
+### Templ imports — example (`.templ`)
+
+```go
+import "github.com/fastygo/templ/ui"
+import cmp "github.com/fastygo/templ/components"
+
+// @ui.Stack(ui.StackProps{ ... }) { … }
+// @cmp.Card(cmp.CardProps{ ... }) { … }
+```
+
+**`.go`** helpers use the same **`ui`** / **`cmp`** packages or **`templ/utils`** — not deep `templ/ui/...` paths.
+
+## Dependencies (Go)
+
+- **`github.com/fastygo/templ`** — via module version / vendor (not local `replace` in published workflow).
+- **Do not** `require` **`github.com/fastygo/blocks`** or **`github.com/fastygo/widgets`** during showcase development in this repo.
+
+## This repo vs future “designed” apps
+
+- **Here:** utilities + tokens in templ/Go; Tailwind `@source` on `internal/ui/**` and vendored `templ`.
+- **Later:** consumer apps add brand; extracted blocks/widgets version independently.
+
+## JS / ARIA
+
+- Static **`aria-*`:** `github.com/fastygo/templ/utils` ARIA helpers where applicable.
+- Behavior: **`@ui8kit/aria`**, `data-ui8kit`, manifest — **`fastygo-ui-aria.mdc`**, **`bun run validate:aria`**.
+
+

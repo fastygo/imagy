@@ -1,0 +1,64 @@
+package layout
+
+import "github.com/fastygo/templ/ui"
+
+templ Shell(props ShellProps) {
+	<!DOCTYPE html>
+	<html lang={ shellLang(props.Lang) }>
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>{ props.Title }</title>
+			if props.HeadExtra != nil {
+				@props.HeadExtra
+			}
+		</head>
+		<body class={ shellBodyClass(props) }>
+			if shellHasNavigation(props) {
+				@ui.Block(mobileSheetRootBlock()) {
+					@ui.Box(mobileSheetOverlayBox())
+					@ui.Box(ui.BoxProps{Class: "absolute left-0 top-0 h-full max-h-dvh w-80 max-w-full overflow-y-auto border-r border-border bg-card p-4"}) {
+						@ui.Group(ui.GroupProps{Class: "flex items-center justify-between gap-2"}) {
+							@ui.Box(ui.BoxProps{Attrs: templ.Attributes{"id": "ui8kit-mobile-sheet-title"}}) {
+								@ui.Text(ui.TextProps{Tag: "span", Class: "text-sm text-muted-foreground"}, shellBrand(props.BrandName))
+							}
+							@ui.Button(mobileSheetCloseButtonProps()) {
+								✕
+							}
+						}
+						@ui.Box(ui.BoxProps{Class: "mt-4"}) {
+							@ui.Stack(ui.StackProps{Tag: "nav", Class: "w-full gap-1 p-2"}) {
+								@Sidebar(SidebarProps{Items: props.NavItems, Active: props.Active, Mobile: true})
+							}
+						}
+					}
+				}
+			}
+			@ui.Group(ui.GroupProps{Class: "flex min-h-screen w-full"}) {
+				if shellHasNavigation(props) {
+					@ui.Block(ui.BlockProps{Tag: "aside", Class: "hidden border-r border-border bg-card md:block md:w-64"}) {
+						@ui.Box(ui.BoxProps{Class: "flex h-15 items-center border-b border-border px-4"}) {
+							@ui.Text(ui.TextProps{Tag: "span", Class: "text-sm font-semibold"}, shellBrand(props.BrandName))
+						}
+						@ui.Stack(ui.StackProps{Tag: "nav", Class: "w-full gap-1 p-2"}) {
+							@Sidebar(SidebarProps{Items: props.NavItems, Active: props.Active})
+						}
+					}
+				}
+				@ui.Box(ui.BoxProps{Class: "flex min-w-0 flex-1 flex-col"}) {
+					@Header(HeaderProps{
+						ShowMenuTrigger:      shellHasNavigation(props),
+						Title:                shellHeaderTitle(props),
+						Extra:                props.HeaderExtra,
+						Trailing:             props.HeaderTrailing,
+						ThemeToggle:          props.ThemeToggle,
+						ThemeToggleComponent: props.ThemeToggleComponent,
+					})
+					@ui.Block(ui.BlockProps{Tag: "main", Class: "flex w-full min-w-0 max-w-full flex-col gap-6 p-4 md:p-6"}) {
+						{ children... }
+					}
+				}
+			}
+		</body>
+	</html>
+}

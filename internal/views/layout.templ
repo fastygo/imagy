@@ -1,0 +1,26 @@
+package views
+
+import (
+	templpkg "github.com/a-h/templ"
+	"github.com/fastygo/imagy/internal/views/partials"
+	"github.com/fastygo/ui8kit/layout"
+)
+
+templ CabinetLayout(d LayoutData, body templpkg.Component) {
+	@layout.Shell(layout.ShellProps{
+		Title:          d.Title,
+		Lang:           d.Lang,
+		BrandName:      d.Brand,
+		Active:         d.Active,
+		NavItems:       d.NavItems,
+		CSSPath:        d.Assets.CSS,
+		ThemeJSPath:    d.Assets.ThemeJS,
+		AppJSPath:      d.Assets.AppJS,
+		HeaderExtra:    nil,
+		HeaderTrailing: partials.AccountMenu(d.AccountEmail, d.AccountSignOutText, d.LanguageToggle),
+		ThemeToggle:    d.Theme,
+		MarketingShell: false,
+	}) {
+		@body
+	}
+}

@@ -1,0 +1,97 @@
+package blogcard
+
+import (
+	cmp "github.com/fastygo/templ/components"
+	"github.com/fastygo/templ/ui"
+)
+
+// BlogCardData is the view model for blog card composites.
+// Callers may pass app fixtures; package defaults cover standalone demos and CLI copy.
+type BlogCardData struct {
+	Title     string
+	Excerpt   string
+	Href      string
+	MediaURL  string
+	MediaAlt  string
+	DateLabel string
+}
+
+// DefaultVertical returns English wireframe defaults for the vertical blog card.
+func DefaultVertical() BlogCardData {
+	return BlogCardData{
+		Title:     "Getting started with wireframe layouts",
+		Excerpt:   "A short summary of the article for list and card surfaces.",
+		Href:      "/blog/getting-started",
+		MediaURL:  "/static/img/placeholder.svg",
+		MediaAlt:  "Article cover placeholder",
+		DateLabel: "May 19, 2026",
+	}
+}
+
+// DefaultHorizontal returns English wireframe defaults for the horizontal blog card.
+func DefaultHorizontal() BlogCardData {
+	return BlogCardData{
+		Title:     "Composable sections without raw HTML",
+		Excerpt:   "Build blocks from templ/ui primitives and reusable app components.",
+		Href:      "/blog/composable-sections",
+		MediaURL:  "/static/img/placeholder.svg",
+		MediaAlt:  "Article thumbnail placeholder",
+		DateLabel: "May 18, 2026",
+	}
+}
+
+func mediaAttrs(data BlogCardData) templ.Attributes {
+	attrs := templ.Attributes{"role": "img"}
+	if data.MediaAlt != "" {
+		attrs["aria-label"] = data.MediaAlt
+	}
+	return attrs
+}
+
+templ blogMedia(data BlogCardData, class string) {
+	@ui.Box(ui.BoxProps{
+		Class: "bg-muted " + class,
+		Attrs: mediaAttrs(data),
+	})
+}
+
+templ blogCardBody(data BlogCardData) {
+	@cmp.CardHeader(cmp.CardHeaderProps{Class: "border-0 px-4 pt-4 pb-0"}) {
+		@cmp.CardTitle(cmp.CardTitleProps{Order: 3, Class: "text-base font-semibold leading-snug"}, data.Title)
+	}
+	@cmp.CardContent(cmp.CardContentProps{Class: "px-4 pt-2 pb-4"}) {
+		@ui.Stack(ui.StackProps{Class: "gap-2"}) {
+			@ui.Text(ui.TextProps{Class: "text-sm text-muted-foreground leading-relaxed"}, data.Excerpt)
+			if data.DateLabel != "" {
+				@ui.Text(ui.TextProps{Class: "text-xs text-muted-foreground"}, data.DateLabel)
+			}
+			if data.Href != "" {
+				@ui.Button(ui.ButtonProps{
+					Href:    data.Href,
+					Variant: "link",
+					Class:   "h-auto justify-start p-0 text-sm",
+				}) {
+					Read more
+				}
+			}
+		}
+	}
+}
+
+templ VerticalBlogCard(data BlogCardData) {
+	@cmp.Card(cmp.CardProps{Class: "max-w-sm overflow-hidden"}) {
+		@blogMedia(data, "aspect-video w-full")
+		@blogCardBody(data)
+	}
+}
+
+templ HorizontalBlogCard(data BlogCardData) {
+	@cmp.Card(cmp.CardProps{Class: "max-w-2xl overflow-hidden"}) {
+		@ui.Group(ui.GroupProps{Class: "items-stretch gap-0"}) {
+			@blogMedia(data, "aspect-square w-36 shrink-0 sm:w-44")
+			@ui.Box(ui.BoxProps{Class: "min-w-0 flex-1"}) {
+				@blogCardBody(data)
+			}
+		}
+	}
+}

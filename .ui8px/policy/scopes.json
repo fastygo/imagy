@@ -1,0 +1,39 @@
+{
+  "defaultScope": "layout",
+  "scopes": [
+    {
+      "name": "controls",
+      "files": [
+        "ui/**",
+        "components/**",
+        "utils/variants.go",
+        "utils/**/*.go",
+        "**/internal/ui/**",
+        "**/internal/ui/components/**",
+        "web/static/css/latty-icons.css",
+        "**/web/static/css/latty-icons.css",
+        "vendor/github.com/fastygo/ui8kit/**/*.go",
+        "vendor/github.com/fastygo/ui8kit/**/*.templ"
+      ],
+      "spacing": "control"
+    },
+    {
+      "name": "layout",
+      "files": [
+        "layout/**",
+        "tests/examples/**",
+        "examples/**",
+        "**/internal/views/**"
+      ],
+      "spacing": "layout"
+    },
+    {
+      "name": "fonts",
+      "files": [
+        "web/static/css/gfonts.css",
+        "**/web/static/css/gfonts.css"
+      ],
+      "spacing": "control"
+    }
+  ]
+}

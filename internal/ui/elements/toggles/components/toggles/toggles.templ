@@ -1,0 +1,23 @@
+package toggles
+
+import (
+	"strings"
+
+	"github.com/fastygo/framework/pkg/web/view"
+	"github.com/fastygo/templ/ui"
+)
+
+templ LanguageToggle(data view.LanguageToggleData) {
+	if strings.TrimSpace(data.CurrentLabel) != "" || strings.TrimSpace(data.CurrentLocale) != "" {
+		@ui.Button(ui.ButtonProps{
+			ID:        "language-toggle",
+			Href:      data.NextHref,
+			Variant:   "unstyled",
+			Class:     "inline-flex h-8 w-8 items-center justify-center gap-1 rounded-md bg-transparent p-0 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
+			AriaLabel: languageToggleAriaLabel(data),
+			Attrs:     languageToggleAttrs(data),
+		}) {
+			{ languageToggleLabel(data.CurrentLabel, data.CurrentLocale) }
+		}
+	}
+}

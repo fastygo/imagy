@@ -1,0 +1,8 @@
+.manual
+.project
+.reference
+node_modules
+/tmp/
+*.exe
+.env
+.DS_Store

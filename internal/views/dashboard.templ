@@ -1,0 +1,11 @@
+package views
+
+import "github.com/fastygo/ui8kit/ui"
+
+templ DashboardPage(data DashboardData) {
+	@ui.Stack(ui.StackProps{Class: "flex flex-col gap-4"}) {
+		@ui.Title(ui.TitleProps{Order: 1}, data.Title)
+		@ui.Text(ui.TextProps{Class: "text-sm text-muted-foreground"}, data.Description)
+		@ui.Text(ui.TextProps{Class: "text-sm text-muted-foreground leading-relaxed"}, data.Body)
+	}
+}

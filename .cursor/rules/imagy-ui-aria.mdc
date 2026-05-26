@@ -1,0 +1,33 @@
+---
+description: ImagYUI — ARIA: Go helpers + @ui8kit/aria, manifest, progressive patterns with DS
+alwaysApply: true
+---
+
+# ARIA support (ImagYUI)
+
+## Two layers (both matter from the prototype phase)
+
+1. **Static markup (Go / templ)** — use **`github.com/fastygo/base/utils/aria.go`** for stable `aria-*` attributes on server-driven state (labels, expanded where known at render time, controls, etc.). This is **not** optional for interactive surfaces.
+
+2. **Client behavior** — **`@ui8kit/aria`** ([npm `@ui8kit/aria`](https://www.npmjs.com/package/@ui8kit/aria)): keyboard, focus management, and runtime ARIA updates for **UI8Kit-compatible** markup (`data-ui8kit="…"`, dialog/sheet, tabs, combobox, accordion, disclosure, tooltip, …). The app **depends on this package** in `package.json`; committed bundles under `web/static/js/` must stay **version-aligned** with [`web/static/js/manifest.json`](web/static/js/manifest.json) (`ariaVersion`, `patterns`, `ariaMode`).
+
+## Progressive inclusion (not “all or nothing”)
+
+- Prefer **per-pattern** registration (ESM imports of `@ui8kit/aria/dialog`, …) or a **curated subset** over blindly loading the full IIFE unless the page needs every pattern.
+- When the design system adds a **new** interactive primitive, add **at the same time**: correct markup contract, **Go/static ARIA** where applicable, and the **matching `@ui8kit/aria` pattern** + manifest entry so **`ui8px validate aria`** stays green.
+- Long-term goal: coverage of **W3C APG-style** patterns the kit uses; grow the `patterns` array in **`manifest.json`** as new sections appear—do not defer accessibility until “after design.”
+
+## Operational checks
+
+- After changing markup hooks or bundle composition, run **`bun run validate:aria`** (see **`imagy-ui-validation-testing.mdc`**) or **`ui8px validate aria`** per [ui8px-cli README](https://github.com/ui8kit/ui8px-cli), with **`--manifest`** / **`--package`** if paths differ.
+- Respect **`window.__UI8KIT_ARIA_AUTO_INIT__`**: disable auto-init only when you call **`window.ui8kit.init()`** explicitly (per `@ui8kit/aria` docs).
+
+## Coordination
+
+- **`imagy-ui-atomic-ui8px.mdc`** — ui8px utilities, no raw tags, Base/UI8Kit composition.  
+- **`imagy-ui-design-system-registry.mdc`** — where blocks/components/widgets live; **widgets** often own the glue to data + **aria** contract.  
+- **`imagy-ui-fixtures-data.mdc`** — copy and locale; keep **accessible names** in fixtures when they are user-visible strings.  
+- **`imagy-ui-validation-testing.mdc`** — CI commands: **`validate:aria`**, **`validate:html`**, **`test:e2e`** (axe), Go wireframe tests.  
+- **`imagy-ui-aria.mdc` (this file)** — **ARIA policy** and **`@ui8kit/aria`** lifecycle.
+
+Future **`imagy add …`** should declare **minimal** aria pattern imports + manifest deltas alongside copied Go/templ—same as shadcn shipping behavior + deps.

@@ -1,0 +1,22 @@
+package partials
+
+import (
+	"github.com/fastygo/imagy/internal/ui/elements/toggles"
+	"github.com/fastygo/elements/account"
+	"github.com/fastygo/framework/pkg/web/view"
+	"github.com/fastygo/ui8kit/ui"
+)
+
+const cabinetLogoutPath = "/cabinet/logout"
+
+// AccountMenu renders language switch plus sign-out (elements account.Menu).
+templ AccountMenu(email string, signOutLabel string, language view.LanguageToggleData) {
+	@ui.Group(ui.GroupProps{Class: "flex w-full min-w-0 flex-1 flex-wrap items-center justify-end gap-2 sm:gap-3"}) {
+		@toggles.LanguageToggle(language)
+		@account.Menu(account.MenuProps{
+			Email:         email,
+			SignOutLabel:  signOutLabel,
+			SignOutAction: cabinetLogoutPath,
+		})
+	}
+}

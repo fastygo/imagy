@@ -1,0 +1,45 @@
+package views
+
+import (
+	"github.com/fastygo/ui8kit/layout"
+	"github.com/fastygo/ui8kit/ui"
+)
+
+const loginFormAction = "/cabinet/login"
+
+templ LoginPage(d LoginPageData) {
+	@layout.Shell(LoginShellProps(d)) {
+		@ui.Stack(ui.StackProps{Class: "mx-auto flex max-w-md flex-col gap-6 py-12"}) {
+			@ui.Title(ui.TitleProps{Order: 1}, d.Title)
+			@ui.Text(ui.TextProps{Class: "text-sm text-muted-foreground"}, d.Subtitle)
+			if d.Error != "" {
+				@ui.Text(ui.TextProps{Class: "text-sm text-destructive"}, d.Error)
+			}
+			@ui.Form(ui.FormProps{Action: loginFormAction, Method: "post", Class: "flex flex-col gap-4"}) {
+				if d.ReturnTo != "" {
+					@ui.Field(ui.FieldProps{Type: "hidden", Name: "return_to", Value: d.ReturnTo})
+				}
+				@ui.Field(ui.FieldProps{
+					Type:           "email",
+					Name:           "email",
+					Label:          d.EmailLabel,
+					Placeholder:    d.EmailLabel,
+					Required:       true,
+					Autocomplete:   "username",
+				})
+				@ui.Field(ui.FieldProps{
+					Type:           "password",
+					Name:           "password",
+					Label:          d.PasswordLabel,
+					Required:       true,
+					Autocomplete:   "current-password",
+				})
+				@ui.Button(ui.ButtonProps{
+					Type:    "submit",
+					Variant: "unstyled",
+					Class:   "inline-flex h-10 w-full items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow-xs transition-colors hover:opacity-90",
+				}, d.SubmitLabel)
+			}
+		}
+	}
+}

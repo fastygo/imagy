@@ -1,0 +1,65 @@
+package layout
+
+import (
+	"github.com/fastygo/templ/ui"
+	"github.com/fastygo/ui/internal/ui/components/icon"
+)
+
+templ Sidebar(props SidebarProps) {
+	for _, group := range GroupNavItems(props.Items) {
+		if group.Label != "" {
+			@ui.Text(ui.TextProps{Tag: "p", Class: "px-4 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground"}, group.Label)
+		}
+		if NavSectionNeedsCollapse(group.Items) {
+			@sidebarNavCollapse(props, group)
+		} else {
+			@sidebarNavLinks(props, group.Items)
+		}
+	}
+}
+
+templ sidebarNavLinks(props SidebarProps, items []NavItem) {
+	for i, item := range items {
+		if props.Mobile && i > 0 && isExternalNavLink(item.Path) && !isExternalNavLink(items[i-1].Path) {
+			@ui.Box(ui.BoxProps{Class: "my-2 border-t border-border"})
+		}
+		@sidebarNavLink(props.Active, item, "")
+	}
+}
+
+templ sidebarNavCollapse(props SidebarProps, group NavSectionGroup) {
+	@ui.Stack(navCollapseRootStackProps(NavSectionCollapseID(group.Label, props.Mobile), NavSectionExpanded(props.Active, group.Items))) {
+		for i := 0; i < NavCollapseFullVisible && i < len(group.Items); i++ {
+			@sidebarNavLink(props.Active, group.Items[i], "")
+		}
+		if len(group.Items) > NavCollapseFullVisible {
+			@ui.Box(navCollapseTeaserBoxProps(NavSectionExpanded(props.Active, group.Items))) {
+				for i := NavCollapseFullVisible; i < navCollapseThreshold() && i < len(group.Items); i++ {
+					@sidebarNavTeaserItem(group.Items[i], i-NavCollapseFullVisible)
+				}
+				@ui.Box(navCollapseTeaserHitBoxProps(NavSectionCollapseID(group.Label, props.Mobile), NavSectionExpanded(props.Active, group.Items)))
+			}
+			@ui.Stack(navCollapseOverflowStackProps(NavSectionCollapseID(group.Label, props.Mobile), NavSectionExpanded(props.Active, group.Items))) {
+				for i := NavCollapseFullVisible; i < len(group.Items); i++ {
+					@sidebarNavLink(props.Active, group.Items[i], "")
+				}
+			}
+		}
+	}
+}
+
+templ sidebarNavTeaserItem(item NavItem, fadeIndex int) {
+	@ui.Box(ui.BoxProps{Class: navCollapseTeaserItemClass(fadeIndex)}) {
+		@icon.Icon(icon.IconProps{Name: "chevron-right", Size: "sm"})
+		@ui.Text(ui.TextProps{Tag: "span", Class: "min-w-0"}, item.Label)
+	}
+}
+
+templ sidebarNavLink(active string, item NavItem, extraClass string) {
+	@ui.Button(sidebarLinkButtonProps(active, item, extraClass)) {
+		if item.Icon != "" {
+			@icon.Icon(icon.IconProps{Name: "chevron-right", Size: "sm"})
+		}
+		@ui.Text(ui.TextProps{Tag: "span", Class: "min-w-0"}, item.Label)
+	}
+}

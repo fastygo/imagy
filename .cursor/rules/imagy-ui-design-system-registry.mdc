@@ -1,0 +1,94 @@
+---
+description: FastyGoUI — internal/ui registry, templ stack, staging vs future blocks/widgets modules
+alwaysApply: true
+---
+
+# Design system & registry (FastyGoUI)
+
+## Positioning: showcase / structure lab
+
+- **`github.com/fastygo/templ`** — minimal copy-paste registry: primitives (`templ/ui`) + neutral composites (`templ/components`). Wireframe-grade, not production chrome.
+- **`github.com/fastygo/ui` (this app)** — shadcn-style **site with content**: routes, fixtures, shell, and **`internal/ui/`** as the **staging registry** until the block/widget set is final.
+- **Not in scope during active fill:** `github.com/fastygo/blocks`, `github.com/fastygo/widgets` as Go dependencies — ignore those repos; develop here first, extract later.
+
+## Single source of truth (policy)
+
+- **`FastyGoUI/.ui8px/policy/**`** is the **authoritative** ui8px policy. Other repos may **sync from here**; do not invert that flow.
+- Styling: **only** policy-approved Tailwind utilities + **shadcn/tweakcn semantic tokens** in source. **No** parallel `ui-*` semantic CSS layer as SoT in this repo.
+
+## Two time horizons (do not mix)
+
+1. **Now — prototypes (“сила структуры”):** build **layouts** and **blocks** into readable showcase pages; explicit utility chains are OK. Goal: IA, semantics, a11y, composition — not brand polish.
+2. **Later — brand & polish / extraction:** product identity per consumer app; **freeze** then move `internal/ui/blocks` → **`github.com/fastygo/blocks`**, `internal/ui/widgets` → **`github.com/fastygo/widgets`**. **`internal/ui/layout`** stays in this app.
+
+## Composition model
+
+| Layer | Source | Role |
+|-------|--------|------|
+| Atoms / helpers | `github.com/fastygo/templ/utils` | Cn, CVA, tags, ARIA |
+| Molecules | `github.com/fastygo/templ/ui` | Button, Stack, Block, Form, Table, … |
+| Kit composites | `github.com/fastygo/templ/components` | Card, Alert, Breadcrumb, … |
+| App registry | **`internal/ui/*`** | Shell, blocks, widgets, app components |
+
+**No raw HTML** layout/content tags in app composition — use `templ/ui` (+ `templ/components`). Document shell only: `<!DOCTYPE>`, `<html>`, `<head>`, `<body>`, `<meta>`, `<title>` in layout/head partials.
+
+## `internal/ui/` — authoritative tree
+
+```
+internal/ui/
+  layout/       # registry:layout — shell, header, sidebar (permanent in app)
+  components/   # registry:components — dumb showcase UI (icon, toggles, …)
+  blocks/       # registry:blocks — section organisms (staging → fastygo/blocks)
+    dashboard/
+    marketing/
+    docs/
+    …           # new folder = new showcase group only when needed
+  widgets/      # registry:widgets — UI + behavior (staging → fastygo/widgets)
+  variants/     # registry:variants — optional wireframe utility maps
+  utils/        # registry:utils — thin helpers on templ/utils
+```
+
+| Label | Path | Role |
+|--------|------|------|
+| `registry:layout` | `internal/ui/layout/` | App chrome, routes frame; **not** extracted to blocks. |
+| `registry:blocks` | `internal/ui/blocks/<group>/` | Section scaffolds + **in-package default copy** (shadcn-style). |
+| `registry:components` | `internal/ui/components/` | Pure UI; no HTTP/domain/fetch. |
+| `registry:widgets` | `internal/ui/widgets/` | Fetch, state, orchestration; composes blocks/components. |
+| `registry:variants` | `internal/ui/variants/` | Named, ui8px-safe utility presets. |
+| `registry:utils` | `internal/ui/utils/` | App-specific helpers; delegate generic logic to **templ/utils**. |
+
+There is **no** `internal/ui/elements` and **no** `internal/ui/ui/` layer.
+
+## `components` vs `widgets` vs `blocks`
+
+- **`blocks`** — section-level markup + default demo data; portable wireframe (future CDN/`fastygo add`).
+- **`components`** — small reusable pieces (icon, toggles); props only.
+- **`widgets`** — same UI boundaries plus **behavior** (API, loading, subscriptions). If it only renders props → **`components`**; if it **fetches** or coordinates side effects → **`widgets`**.
+
+## Data (three layers)
+
+See **`fastygo-ui-fixtures-data.mdc`**: defaults in block packages, `internal/fixtures` for i18n, locale JSON. Do not collapse layers.
+
+## Promotion & extraction
+
+| Stable & generic | Destination |
+|------------------|-------------|
+| Primitive / small composite | `github.com/fastygo/templ` (`ui/` or `components/`) |
+| Section block | `github.com/fastygo/blocks/<group>` |
+| Interactive / API shell | `github.com/fastygo/widgets` |
+| App shell | **keep** `internal/ui/layout` |
+
+**Freeze before extract:** stable props, 2+ showcase uses or explicit registry intent, default data in block package, dependencies only on **templ** (+ framework for widgets if needed).
+
+## Showcase site
+
+- Sidebar: navigation over registry groups (`blocks/dashboard`, …).
+- Main: live wireframes per block — variants/states, wireframe tokens only.
+
+## Coordination
+
+- **`fastygo-ui-atomic-ui8px.mdc`** — templ imports, ui8px, no raw tags.
+- **`fastygo-ui-aria.mdc`** — `templ/utils` ARIA + `@ui8kit/aria` + manifest.
+- **`fastygo-ui-fixtures-data.mdc`** — fixtures vs block defaults.
+- **`fastygo-ui-validation-testing.mdc`** — lint, Nu, axe, wireframe tests.
+- **`internal/ui/README.md`** — short on-disk index of this tree.

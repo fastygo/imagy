@@ -1,0 +1,45 @@
+---
+description: FastyGoUI — validation & testing (Nu snapshots, axe, aria, Go renders; CSS deferred)
+alwaysApply: true
+---
+
+# Validation & testing
+
+## W3C CSS Validator
+
+- **Deferred** until the **brand / application polish** phase. Tailwind build output and token layers are a poor fit for a strict CSS validator gate in the **wireframe** era.
+
+## Nu HTML Checker (mandatory for snapshot folders)
+
+- **Only** files under **`FastyGoUI/.validate/html-snapshots/nu/`** (recursive `**/*.html`) are validated with the **W3C Nu** service via `bun run validate:html` (`scripts/validate-html-snapshots.mjs`). Draft renders live in **`html-snapshots/generated/`** and are not validated until copied into **`nu/`**.
+- Snapshots must be **complete documents** (`<!DOCTYPE html>`, full tree). See [`.validate/html-snapshots/README.md`](../../.validate/html-snapshots/README.md).
+- **CI / local:** requires **network** access to the validator endpoint. If there are **no** `.html` files, the script **exits 0** (nothing to check).
+
+## Accessibility automation
+
+- **`bun run test:e2e`** — Playwright + **axe-core** on real routes (starts `go run ./cmd/server` on `127.0.0.1:18081`). First-time setup: **`bun run test:e2e:install`** (downloads Chromium + headless shell for Playwright 1.60+).
+- **Wireframe scope:** e2e axe currently **disables `color-contrast`** until the **brand** phase tunes tokens to WCAG AA; all other serious/critical rules still apply. Remove that disable when contrast is locked.
+- **`bun run validate:aria`** — **`ui8px validate aria`** against app sources + [`web/static/js/manifest.json`](../../web/static/js/manifest.json) so bundled patterns match `data-ui8kit` usage.
+
+## Manual APG discipline
+
+- When adding interactive patterns, record a short checklist under **`.validate/apg/`** (see [`.validate/apg/README.md`](../../.validate/apg/README.md)). This is **not** automated; it complements axe.
+
+## Go render tests (wireframe)
+
+- Add **`Test*_wireframeRenders`** (or golden HTML) for critical **templ** surfaces so layout/forms regress without a browser. Example: [`internal/views/wireframe_render_test.go`](../../internal/views/wireframe_render_test.go). Grow coverage as **registry** blocks appear.
+
+## Component documentation
+
+- Use [`.validate/docs/component-spec-template.md`](../../.validate/docs/component-spec-template.md) for **props / examples / ARIA** per component or block.
+
+## `verify` script
+
+- `package.json` **`verify`** runs: `templ` → `build:css` → `lint:ui8px` → **`validate:aria`** → **`validate:html`** → **`go test`** → **`test:e2e`** (order may vary slightly; see actual script).
+
+## Coordination
+
+- **`fastygo-ui-aria.mdc`** — static + `@ui8kit/aria` policy.  
+- **`fastygo-ui-atomic-ui8px.mdc`** — ui8px lint utilities.  
+- **`fastygo-ui-fixtures-data.mdc`** — strings shown in UI must stay sensible for **axe** / screen readers.  
+- **This file** — **what** to run in CI and **where** snapshots and APG docs live.

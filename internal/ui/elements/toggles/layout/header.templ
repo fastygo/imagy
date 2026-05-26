@@ -1,0 +1,35 @@
+package layout
+
+import (
+	"github.com/fastygo/templ/ui"
+	"github.com/fastygo/ui/internal/ui/components/icon"
+)
+
+templ Header(props HeaderProps) {
+	@ui.Block(ui.BlockProps{
+		Tag: "header",
+		Class: "flex h-15 shrink-0 items-center justify-between gap-2 border-b border-border px-4 max-md:sticky max-md:top-0 max-md:z-40 max-md:backdrop-blur max-md:bg-background/80",
+	}) {
+		if props.ShowMenuTrigger {
+			@ui.Button(headerMenuButtonProps()) {
+				@icon.Icon(icon.IconProps{Name: "menu", Size: "sm", Class: "h-4 w-4 shrink-0"})
+			}
+		}
+		@ui.Title(ui.TitleProps{Order: 1, Class: "min-w-0 flex-1 truncate text-left text-base font-bold tracking-tight"}, props.Title)
+		@ui.Group(ui.GroupProps{Class: "flex shrink-0 items-center gap-2"}) {
+			if props.Extra != nil {
+				@props.Extra
+			}
+			if props.Trailing != nil {
+				@props.Trailing
+			}
+			if props.ThemeToggleComponent != nil {
+				@props.ThemeToggleComponent
+			} else {
+				@ui.Button(themeToggleButtonProps(props.ThemeToggle)) {
+					<span id="theme-toggle-icon" class="inline-block h-4 w-4 shrink-0 latty latty-moon" aria-hidden="true"></span>
+				}
+			}
+		}
+	}
+}
