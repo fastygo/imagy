@@ -2,37 +2,26 @@
   "defaultScope": "layout",
   "scopes": [
     {
-      "name": "controls",
+      "name": "views",
+      "files": ["**/internal/views/**"],
+      "spacing": "layout"
+    },
+    {
+      "name": "ui-elements",
+      "files": ["**/internal/ui/elements/**"],
+      "spacing": "control"
+    },
+    {
+      "name": "ui8kit-assets",
       "files": [
-        "ui/**",
-        "components/**",
-        "utils/variants.go",
-        "utils/**/*.go",
-        "**/internal/ui/**",
-        "**/internal/ui/components/**",
-        "web/static/css/latty-icons.css",
-        "**/web/static/css/latty-icons.css",
-        "vendor/github.com/fastygo/ui8kit/**/*.go",
-        "vendor/github.com/fastygo/ui8kit/**/*.templ"
+        "web/static/css/ui8kit/**",
+        "**/web/static/css/ui8kit/**"
       ],
       "spacing": "control"
     },
     {
-      "name": "layout",
-      "files": [
-        "layout/**",
-        "tests/examples/**",
-        "examples/**",
-        "**/internal/views/**"
-      ],
-      "spacing": "layout"
-    },
-    {
       "name": "fonts",
-      "files": [
-        "web/static/css/gfonts.css",
-        "**/web/static/css/gfonts.css"
-      ],
+      "files": ["web/static/css/gfonts.css"],
       "spacing": "control"
     }
   ]
